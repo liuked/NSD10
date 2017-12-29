@@ -7,13 +7,13 @@ int main() {
 
     int start = (int)time(nullptr);
 
-    string infn = "../graphs/sample.graph";
-    string normfn = "../graphs/normalized.out";
-    string evlistfn = "../graphs/event_list.out";
-    string distrfn = "../graphs/distr.out";
-    string intercfn = "../graphs/inter-cont.log";
-    string degevofn = "../graphs/deg-evo.out";
-    string linkfracfn = "../graphs/link_frac.out";
+    string infn = "../Infocom/Infocom06";
+    string normfn = "../Infocom/normalized.out";
+    string evlistfn = "../Infocom/event_list.out";
+    string distrfn = "../Infocom/distr.out";
+    string intercfn = "../Infocom/inter-cont.log";
+    string degevofn = "../Infocom/deg-evo.out";
+    string linkfracfn = "../Infocom/link_frac.out";
 
     bool debug = false;
 
@@ -24,24 +24,24 @@ int main() {
     }
 
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): parsing file..." << endl;
-    GraphFileHandler::remove_offest(infn, normfn, true);
+    GraphFileHandler::remove_offest(infn, normfn, debug);
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): done!..." << endl;
 
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): genrating event list..." << endl;
-    GraphFileHandler::generate_event_list(normfn, evlistfn, true);
+    GraphFileHandler::generate_event_list(normfn, evlistfn, debug);
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): done!..." << endl;
 
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): computing intercontacts duration time..." << endl;
-    GraphFileHandler::compute_intercont_distr(evlistfn, intercfn, distrfn, true);
+    GraphFileHandler::compute_intercont_distr(evlistfn, intercfn, distrfn, debug);
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): done!..." << endl;
 
 
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): computing intercontacts duration time..." << endl;
-    GraphFileHandler::compute_avg_degree(evlistfn, degevofn, true);
+    GraphFileHandler::compute_avg_degree(evlistfn, degevofn, debug);
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): done!..." << endl;
 
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): computing link evolution fractions..." << endl;
-    GraphFileHandler::compute_link_evo_fract(evlistfn, linkfracfn, true);
+    GraphFileHandler::compute_link_evo_fract(evlistfn, linkfracfn, debug);
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): done!..." << endl;
 
     return 0;

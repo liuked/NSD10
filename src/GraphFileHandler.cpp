@@ -88,6 +88,8 @@ unsigned int GraphFileHandler::find_minimum(fstream &infile, bool debug) {
     unsigned int line[4];
     unsigned int t_min;
 
+    t_min = -1;
+
     while(!infile.eof()){
 
         infile >> line[0] >> line[1] >>  line[2] >> line[3];
@@ -182,7 +184,7 @@ int GraphFileHandler::generate_event_list(string in_fn, string out_fn, bool debu
 
         while (events.begin()!=events.end()){
             outfile << events.begin()->t << " " << events.begin()->n1 << " " << events.begin()->n2 << " " << ((events.begin()->e)?'S':'C') << endl;
-            cout    << events.begin()->t << " " << events.begin()->n1 << " " << events.begin()->n2 << " " << ((events.begin()->e)?'S':'C') << endl;
+            if (debug) cout    << events.begin()->t << " " << events.begin()->n1 << " " << events.begin()->n2 << " " << ((events.begin()->e)?'S':'C') << endl;
             events.erase(events.begin());
         }
 
@@ -379,8 +381,8 @@ int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, b
             t_max = line[0];
 
         }
-        cout << "[DEBUG] - GraphFileHandler::compute_avg_degree: num_nodes= " << num_nodes << endl;
-        cout << "[DEBUG] - GraphFileHandler::compute_avg_degree: max time= " << t_max << endl << endl;
+        if (debug) cout << "[DEBUG] - GraphFileHandler::compute_avg_degree: num_nodes= " << num_nodes << endl;
+        if (debug) cout << "[DEBUG] - GraphFileHandler::compute_avg_degree: max time= " << t_max << endl << endl;
 
         if (num_nodes==0){
             cout << "[ERROR] - GraphFileHandler::compute_avg_degree: graph is empty" << endl;
@@ -529,7 +531,7 @@ int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_
         }
 
         max_links = num_nodes*(num_nodes-1);
-        cout << "[DEBUG] - GraphFileHandler::compute_link_evo_fract: num_nodes= " << num_nodes << " max_links= " << max_links << endl;
+        if (debug) cout << "[DEBUG] - GraphFileHandler::compute_link_evo_fract: num_nodes= " << num_nodes << " max_links= " << max_links << endl;
 
         if (debug) cout << "[DEBUG] - GraphFileHandler::compute_link_evo_fract: done" << endl;
 
@@ -572,7 +574,7 @@ int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_
                 if (t_current!=line[0]) {
                     fraction[t_current].created = (max_links != old_exist_links) ? ((float) created_links / (max_links - old_exist_links)) : -1;
                     fraction[t_current].deleted = (old_exist_links != 0) ? ((float) deleted_links / old_exist_links) : -1;
-                    cout << "[DEBUG] - GraphFileHandler::compute_link_evo_fract: " << endl
+                    if (debug) cout << "[DEBUG] - GraphFileHandler::compute_link_evo_fract: " << endl
                          << "     STATS AT TIME   " << t_current << endl
                          << "     old exis links= " << old_exist_links << endl
                          << "     link_created=   " << created_links << endl

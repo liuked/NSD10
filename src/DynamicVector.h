@@ -28,7 +28,7 @@ public:
             delete[] container;
             container = temp;
             size = i + 1;
-            std::cout << "[DEBUG] - DynamicVector::operator[]: container size=" << size << std::endl;
+            //std::cout << "[DEBUG] - DynamicVector::operator[]: container size=" << size << std::endl;
         }
 
         return container[i];

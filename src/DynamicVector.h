@@ -46,14 +46,14 @@ public:
     }
 
     void f_print_nz(std::ostream &out) const {
-        for (int j=0; j<size; j++){
+        for (unsigned int j=0; j<size; j++){
             if (container[j]||j==0||j==size-1) out << j << " " << container[j] << endl;
         }
     }
 
     void f_print_fill(std::ostream &out) const {
         T last;
-        for (int j=0; j<size; j++){
+        for (unsigned int j=0; j<size; j++){
             out << j << " ";
             if (container[j]!=0||j==0||j==size-1){
                 out << container[j];

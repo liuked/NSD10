@@ -30,6 +30,7 @@ public:
 
     // starting from a event list file
     static int compute_intercont_distr(string ev_list_fn, string intercont_fn, string distr_fn, bool debug=false);
+    static int compute_ic_cdf(string distr_fn, string cdf_fn, bool debug=false);
     static int compute_avg_degree(string ev_list_fn, string deg_evo_fn, bool debug=false);
     static int compute_link_evo_fract(string ev_list_fn, string link_evo_fn, bool debug=false);
 
@@ -48,9 +49,13 @@ protected:
 class LinkEvolutionFraction {
 public:
     LinkEvolutionFraction();
+    LinkEvolutionFraction(int common_default);
     friend ostream &operator<<(ostream &os, const LinkEvolutionFraction &fraction);
 
     bool operator!=(const int &rhs) const;
+
+    LinkEvolutionFraction operator/(const int &rhs) const;
+    LinkEvolutionFraction& operator+=(const LinkEvolutionFraction &rhs);
 
     float created;
     float deleted;

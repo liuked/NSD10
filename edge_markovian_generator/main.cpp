@@ -142,12 +142,12 @@ void removeRandomLink (int n, int step, int steps, bool debug, string filename, 
     }
 
     if (matrix[node_1][node_2]){
-        graph << steps-step+1 << " " << node_1 << " " << node_2 << " D\n";
+        graph << steps-step+1 << " " << node_1 << " " << node_2 << " S\n";
 
         // updating the matrix after removing the link
         matrix[node_1][node_2] = false;
     } else {
-        graph << steps-step+1 << " " << node_2 << " " << node_1 << " D\n";
+        graph << steps-step+1 << " " << node_2 << " " << node_1 << " S\n";
 
         // updating the matrix after removing the link
         matrix[node_2][node_1] = false;

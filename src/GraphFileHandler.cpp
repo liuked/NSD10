@@ -335,18 +335,19 @@ int GraphFileHandler::compute_intercont_distr(string ev_list_fn, string intercon
 }
 
 
-int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, bool debug) {
+int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, string deg_distr_fn, bool debug) {
 
 
     // Variables
     fstream       infile;
     fstream       outfile;
+    fstream       distr_outfile;
     unsigned int  line[3];
     char          e;
     unsigned int  num_nodes;
     unsigned int  t_max;
     float         avg_deg;
-    DynamicVector<unsigned int> degree(MIN_NODES);
+    DynamicVector<unsigned int> deg_distr(100);
     // ---------------------------------------------------------------------------------------------
 
 
@@ -413,6 +414,7 @@ int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, b
     if (infile.is_open()) {
 
         outfile.open(deg_evo_fn, ios::out);
+        distr_outfile.open(deg_distr_fn, ios::out);
 
         if (outfile.is_open()) {
 
@@ -454,6 +456,7 @@ int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, b
                 }
 
                 deg_evo[line[0]] = avg_deg;
+                deg_distr[(unsigned int)(avg_deg*100)]++;
 
             }
 
@@ -462,11 +465,14 @@ int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, b
 
             deg_evo.f_print_nz(outfile);
 
+            deg_distr.f_print_nz(distr_outfile);
+
             infile.close();
             outfile.close();
 
         } else {
-            cout << "[ERROR] - GraphFileHandler::compute_avg_degree: unable to open the file " << deg_evo_fn << endl;
+            cout << "[ERROR] - GraphFileHandler::compute_avg_degree: unable to open the file " << deg_evo_fn << endl
+                 << "or " << deg_distr_fn << endl;
             return -1;
         }
 
@@ -478,11 +484,12 @@ int GraphFileHandler::compute_avg_degree(string ev_list_fn, string deg_evo_fn, b
 }
 
 
-int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_fn, bool debug) {
+int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_fn, string dens_evo_fn, bool debug) {
 
     // Variables
     fstream       infile;
     fstream       outfile;
+    fstream       outfile2;
     unsigned int  line[3];
     char          e;
     unsigned int  t_max;
@@ -554,6 +561,7 @@ int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_
     }
 
     DynamicVector<LinkEvolutionFraction> fraction(t_max+1);
+    DynamicVector<float> dens_evo(t_max+1);
     LinkEvolutionFraction avg_frac(0);
 
     existing_links = old_exist_links = 0;
@@ -567,6 +575,7 @@ int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_
     if (infile.is_open()) {
 
         outfile.open(link_evo_fn, ios::out);
+        outfile2.open(dens_evo_fn, ios::out);
 
         if (outfile.is_open()) {
 
@@ -597,6 +606,7 @@ int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_
                          << "     fractions=      " << fraction[t_current] << endl;
                     old_exist_links = existing_links;
                     created_links = deleted_links = 0;
+                    dens_evo[line[0]] = (float)existing_links*2/max_links;
                     t_current = line[0];
                 }
 
@@ -648,13 +658,14 @@ int GraphFileHandler::compute_link_evo_fract(string ev_list_fn, string link_evo_
 
 
             fraction.f_print(outfile);
-
+            dens_evo.f_print(outfile2);
 
             infile.close();
             outfile.close();
 
         } else {
-            cout << "[ERROR] - GraphFileHandler::compute_avg_degree: unable to open the file " << link_evo_fn << endl;
+            cout << "[ERROR] - GraphFileHandler::compute_avg_degree: unable to open the file " << link_evo_fn << endl
+                 << "or " << dens_evo_fn << endl;
             return -1;
         }
 
@@ -736,6 +747,178 @@ int GraphFileHandler::compute_ic_cdf(string distr_fn, string cdf_fn, bool debug)
 
 }
 
+
+
+int GraphFileHandler::compute_transitive_ratio(string ev_list_fn, string tr_evo_fn, bool debug) {
+
+    // Variables
+    fstream       infile;
+    fstream       outfile;
+    //fstream       outfile2;
+    unsigned int  line[3];
+    char          e;
+    unsigned int  t_max;
+    unsigned int  num_nodes;
+    unsigned int  t_current;
+
+    /* others in the middle */
+
+    // ---------------------------------------------------------------------------------------------
+
+
+    if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: starting the function..." << endl;
+
+    if (debug)
+        cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: opening the file..." << endl;
+
+    infile.open(ev_list_fn, ios::in);
+
+    if (infile.is_open()) {
+        if (debug)
+            cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: graph opening succeed! Counting nodes..."
+                 << endl;
+
+        num_nodes = 0;
+
+        while (!infile.eof()) {
+            line[0] = line[1] = line[2] = -1;
+            e = '\0';
+
+            // t n1 n2 e
+            infile >> line[0] // t
+                   >> line[1] // n1
+                   >> line[2] // n2
+                   >> e;      // e
+
+            if (line[0] == -1 || line[1] == -1 || line[2] == -1 || e == '\0') {
+                continue;
+            }
+
+            // since n2>n1 by definition, I check only n2
+            if (line[2]>num_nodes){
+                num_nodes = line[2];
+            }
+            t_max = line[0];
+
+        }
+
+
+
+        if (num_nodes==0){
+            cout << "[ERROR] - GraphFileHandler::compute_transitive_ratio: graph is empty" << endl;
+            return -1;
+        }
+
+        // max_links = num_nodes*(num_nodes-1)/2;
+
+        if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: num_nodes= " << num_nodes << endl;
+
+        if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: done" << endl;
+
+        infile.close();
+
+
+    }else {
+        cout << "[ERROR] - GraphFileHandler::compute_transitive_ratio: unable to open the file " << ev_list_fn << endl;
+        return -1;
+    }
+
+    /*
+     * OTHER VARIABLES
+     */
+
+    DynamicVector<LinkEvolutionFraction> tr(t_max+1);
+    DynAdjList    g(num_nodes);
+
+    /*
+     *
+     */
+
+    t_current = 0;
+
+    infile.open(ev_list_fn, ios::in);
+
+    // ---   ---
+    if (infile.is_open()) {
+
+        outfile.open(tr_evo_fn, ios::out);
+        //outfile2.open(dens_evo_fn, ios::out);
+
+        if (outfile.is_open()) {
+
+
+            if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: graph opening succeed!..."  << endl;
+
+            while (!infile.eof()) {
+
+                line[0] = line[1] = line[2] = -1;
+                e = '\0';
+
+                // t n1 n2 e
+                infile >> line[0] // t
+                       >> line[1] // n1
+                       >> line[2] // n2
+                       >> e;      // e
+
+                if (line[0] == -1 || line[1] == -1 || line[2] == -1 || e == '\0') {
+                    continue;
+                }
+
+                if (t_current!=line[0]) {
+                    if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: t= " << t_current << " computing transitive ratio..." << endl;
+                    if (debug) cout << g;
+                    // TODO: here it goes the code to compute the tr
+
+                    if (debug)cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio: done!." << endl;
+                    t_current = line[0];
+                }
+
+                if (debug) cout << line[0] << " " << line[1] << " " << line[2] << " " << e << endl;
+
+
+                // update adjlist
+                if (e == 'C') {
+                    if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio:  adding link "  << line[1] << "-" << line[2] << endl;
+                    g.add_link(line[1], line[2]);
+                }
+
+                if (e == 'S') {
+                    if (debug) cout << "[DEBUG] - GraphFileHandler::compute_transitive_ratio:  deleting link "  << line[1] << "-" << line[2] << endl;
+                    g.delete_link(line[1], line[2]);
+                }
+
+
+
+            }
+
+
+/*
+            outfile << "# Nodes:   " << num_nodes << endl;
+            outfile << "# Time:    "  << t_max << endl;
+            cout << "Nodes: " << num_nodes << endl;
+            cout << "Time: "  << t_max;
+*/
+
+            tr.f_print_nz(outfile);
+
+            //dens_evo.f_print(outfile2);
+
+            infile.close();
+            outfile.close();
+
+        } else {
+            cout << "[ERROR] - GraphFileHandler::compute_avg_degree: unable to open the file " << tr_evo_fn << endl;
+            return -1;
+        }
+
+    }else {
+        cout << "[ERROR] - GraphFileHandler::compute_avg_degree: unable to open the file " << ev_list_fn << endl;
+        return -1;
+    }
+
+
+
+}
 
 LinkEvolutionFraction::LinkEvolutionFraction() : created(0), deleted(-1) {}
 

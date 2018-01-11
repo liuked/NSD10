@@ -6,6 +6,7 @@
 #define NSD10_DYNAMICVECTOR_H
 
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ template <class T>
 class DynamicVector {
 public:
 
-    DynamicVector(unsigned int _size) : size(_size) {
+    DynamicVector(unsigned int _size=0) : size(_size) {
         container = new T[_size]();
     }
 
@@ -47,7 +48,7 @@ public:
 
     void f_print_nz(std::ostream &out) const {
         for (unsigned int j=0; j<size; j++){
-            if (container[j]||j==0||j==size-1) out << j << " " << container[j] << endl;
+            if (container[j]!=0||j==0||j==size-1) out << j << " " << container[j] << endl;
         }
     }
 
@@ -63,6 +64,61 @@ public:
             }
             out << endl;
         }
+    }
+
+    void insert_order(T e) {
+        unsigned int p = 0;
+        while (p < size && (*this)[p] < e){
+            p++;
+        }
+
+        if (p<size) {
+            for (unsigned int i = size; i>p; i--) {
+                (*this)[i] = (*this)[i-1];
+            }
+        }
+
+        (*this)[p] = e;
+    }
+
+
+    unsigned int find(T e) {
+        unsigned int p = -1;
+
+
+        while ((*this)[++p]<e);
+
+        if ((*this)[++p] == e ) { return p; }
+
+        return -1;
+
+        /*
+         *
+         *
+    // TODO: add control for loop if number doesn't exist in the middle (now it does a ping pong)
+        unsigned int p = size/2;
+        unsigned int step = ceil((float)p/2);
+
+        cout << "looking for " << e << endl;
+        while(p<size && p>=0 && (*this)[p]!=e) {
+            cout << "p=" << p << " el=" << (*this)[p];
+            if (e < (*this)[p]) {
+                p -= step;
+                cout << " [decr]";
+            } else {
+                p += step;
+                cout << " [incr]";
+            }
+            step = ceil((float)step/2);
+            cout << " step=" << step << endl;
+        }
+
+
+        if (p<size && p>=0) { return p; }
+
+        return -1;
+
+         */
     }
 
 

@@ -1,5 +1,5 @@
 --------------------
-NSD: Practical 2
+NSD: Practical 10-11
 --------------------
 
 Authors:
@@ -11,7 +11,7 @@ Programming Language:
 
 Content:
 
-This repository contains the code to solve the exercises of Practical5 (NSD-TME, M2 UPMC).
+This repository contains the code to solve the exercises of Practical10-11 (NSD-TME, M2 UPMC).
 
 Fall Semester 2017/18
 

@@ -25,16 +25,67 @@ public:
 
     GraphFileHandler();
 
+    //  Functions to be used starting from an "link list" file
+
     static int remove_offest(string in_fn, string out_fn, bool debug=false);
     static int generate_event_list(string in_fn, string out_fn, bool debug=false);
+    //--------------------------------------------------------------------------------
 
-    // starting from a event list file
+    // Functions to be used starting from an "event list" file
+
+    /**** INTERCONTACT DISTRIBUTION ****
+     *
+     * arguments:
+     *      - ev_list_fn:   event list file name
+     *      - intercont_fn: file where to save the log of the detected intercontacts
+     *      - distr_fn:     file where to save the distribution of the intercontacts in
+     *                      the form: <duration> <#interc>
+     *      - debug:        whether to print or not the debug lines
+     */
     static int compute_intercont_distr(string ev_list_fn, string intercont_fn, string distr_fn, bool debug=false);
+
+
+    /**** INTERCONTACT CUMULATIVE DISTRIBUTION ****
+     *
+     * arguments:
+     *      - distr_fn: the file name containing the row distribution to integrate
+     *      - cdf_fn:   file where to save the cumulative distribution
+     *      - debug:    whether to print or not the debug lines
+     */
     static int compute_ic_cdf(string distr_fn, string cdf_fn, bool debug=false);
+
+    /**** AVERAGE DEGREE OF THE GRAPH (for each t) ****
+     *
+     * arguments:
+     *      - ev_list_fn:   event list file name
+     *      - deg_evo_fn:   file where to save the average degree evolution in the form <t> <avgDegree>
+     *      - deg_distr_fn: file where to save the distribution of the average degree during the graph life
+     *      - debug:    whether to print or not the debug lines
+     */
     static int compute_avg_degree(string ev_list_fn, string deg_evo_fn, string deg_distr_fn, bool debug=false);
+
+    /**** FRACTION OF THE CREATED AND DELETED LINKS (for each t) ****
+    *
+    * arguments:
+    *      - ev_list_fn:  event list file name
+    *      - link_evo_fn: file where to save the values of the fractions <t> <frOfCreated> <frOfDeleted>
+    *                     if <frOfCreated> is not computable is = -1;
+    *      - dens_evo_fn: file where to save the values of the density of the graph per each time instant
+    *      - debug:    whether to print or not the debug lines
+    */
     static int compute_link_evo_fract(string ev_list_fn, string link_evo_fn, string dens_evo_fn, bool debug=false);
 
+    /**** TRANSITIVE RATIO (for each t) ****
+     *
+     * arguments:
+     *      - ev_list_fn:  event list file name
+     *      - tr_evo_fn: file where to save the values of the transitive ratio <t> <TransitiveRatio>
+     *      - debug:    whether to print or not the debug lines
+     */
     static int compute_transitive_ratio(string ev_list_fn, string tr_evo_fn, bool debug=false);
+
+
+
 
 private:
     static unsigned int find_minimum(fstream &infile, bool debug=false);

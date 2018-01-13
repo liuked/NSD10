@@ -8,9 +8,15 @@ int main() {
     int start = (int)time(nullptr);
 
 
+    /* NEEDED FOR Infocom06 AND RollerNet */
     string infn = "../graphs/sample.graph";
     string normfn = "../graphs/normalized.out";
+
+    /* For GENERATED graphs the file has to be entered HERE */
+    // (For Infocom06 and RollerNet this is an output)
     string evlistfn = "../graphs/event_list.out";
+
+    /* OUT FILES */
     string distrfn = "../graphs/distr.out";
     string degdistrfn = "../graphs/deg_distr.out";
     string cdffn = "../graphs/ic_cdf.out";
@@ -20,17 +26,11 @@ int main() {
     string densevofn = "../graphs/dens_evo.out";
     string trfn = "../graphs/trans_ratio.out";
 
+    // change this variable to print drbug lines (WARNING! Very Verbose!!)
+    // you may want to change the single debug value in the single function
     bool debug = false;
 
-    // ifstream file(infn);
-    ifstream file(evlistfn);
-
-    if (!file.good()) {
-        cout << time(nullptr)-start << "s: " <<  "[ERROR] - main(): No such file ..." << endl;
-        exit(0);
-    }
-
-    cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): parsing file..." << endl;
+    cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): normalizing graph file..." << endl;
     GraphFileHandler::remove_offest(infn, normfn, debug);
     cout << time(nullptr)-start << "s: " << "[EXECUTION] - main(): done!..." << endl;
 

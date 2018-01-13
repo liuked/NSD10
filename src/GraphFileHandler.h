@@ -27,9 +27,25 @@ public:
 
     //  Functions to be used starting from an "link list" file
 
+    /**** REMOVE OFFSET ****
+     *
+     * arguments:
+     *      - in_fn:  input "link list" file
+     *      - out_fn: file name where to save the normalized file (t starting from 0)
+     *      - debug:  whether to print or not the debug lines
+     */
     static int remove_offest(string in_fn, string out_fn, bool debug=false);
+
+    /**** GENERATE EVENT LIST FILE ****
+    *
+    * arguments:
+    *      - in_fn:  input "link list" file (normalized or not)
+    *      - out_fn: file name where to write the event list
+    *      - debug:  whether to print or not the debug lines
+    */
     static int generate_event_list(string in_fn, string out_fn, bool debug=false);
     //--------------------------------------------------------------------------------
+
 
     // Functions to be used starting from an "event list" file
 
